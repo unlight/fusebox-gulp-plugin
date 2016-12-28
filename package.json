@@ -1,0 +1,51 @@
+{
+  "name": "fuse-box-plugin-gulp",
+  "version": "0.0.1",
+  "description": "Adapt gulp plugins to work with fuse-box",
+  "main": "lib",
+  "scripts": {
+    "clean": "rm -rf .fusebox",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "npm run clean && ava lib/*.test.js --verbose --serial",
+    "test:w": "npm run clean && ava lib/*.test.js --verbose --serial --watch --source=lib/*.*"
+  },
+  "devDependencies": {
+    "@types/node": "6.0.54",
+    "@types/vinyl": "2.0.0",
+    "ava": "0.17.0",
+    "gulp-debug": "3.0.0",
+    "gulp-eslint": "3.0.1",
+    "gulp-inject-string": "1.1.0",
+    "gulp-json5": "0.0.2",
+    "gulp-load-plugins": "1.4.0",
+    "gulp-markdown": "1.2.0",
+    "gulp-replace": "0.5.4",
+    "gulp-size": "2.1.0",
+    "typescript": "2.1.4"
+  },
+  "peerDependencies": {
+    "fuse-box": "^1.3.24"
+  },
+  "dependencies": {
+    "pumpify": "1.3.5",
+    "stream-to-string": "1.1.0",
+    "vinyl": "2.0.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unlight/fuse-box-plugin-gulp.git"
+  },
+  "keywords": [
+    "gulp",
+    "fuse-box"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unlight/fuse-box-plugin-gulp/issues"
+  },
+  "homepage": "https://github.com/unlight/fuse-box-plugin-gulp#readme"
+}
