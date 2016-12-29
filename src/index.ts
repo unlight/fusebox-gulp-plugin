@@ -42,8 +42,7 @@ export class GulpAdapterPlugin implements Plugin {
         });
         const input = streamToVinyl(file.absPath);
         streams.unshift(input);
-        const output = vinylToStream();
-        streams.push(output);
+        streams.push(vinylToStream());
         const pipeline = pumpify.obj(...streams);
         input.write(file.contents);
         // pipeline.on('error', err => {

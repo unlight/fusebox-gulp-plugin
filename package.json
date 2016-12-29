@@ -1,5 +1,5 @@
 {
-  "name": "fuse-box-plugin-gulp",
+  "name": "fusebox-gulp-plugin",
   "version": "0.0.1",
   "description": "Adapt gulp plugins to work with fuse-box",
   "main": "lib",
@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unlight/fuse-box-plugin-gulp.git"
+    "url": "git+https://github.com/unlight/fusebox-gulp-plugin.git"
   },
   "keywords": [
     "gulp",
@@ -45,7 +45,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/unlight/fuse-box-plugin-gulp/issues"
+    "url": "https://github.com/unlight/fusebox-gulp-plugin/issues"
   },
-  "homepage": "https://github.com/unlight/fuse-box-plugin-gulp#readme"
+  "homepage": "https://github.com/unlight/fusebox-gulp-plugin#readme"
 }
