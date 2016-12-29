@@ -1,13 +1,14 @@
 {
   "name": "fusebox-gulp-plugin",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Adapt gulp plugins to work with fuse-box",
   "main": "lib",
   "scripts": {
     "clean": "rm -rf .fusebox",
+    "postinstall": "npm i fuse-box uglify-js",
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "npm run clean && ava lib/*.test.js --verbose --serial",
+    "test": "ava lib/*.test.js --verbose --serial --no-cache",
     "test:w": "npm run clean && ava lib/*.test.js --verbose --serial --watch --source=lib/*.*"
   },
   "devDependencies": {

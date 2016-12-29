@@ -1,5 +1,5 @@
 import { test } from 'ava';
-import { GulpAdapterPlugin } from './index';
+import { GulpPlugin } from './index';
 import { FuseBox, HTMLPlugin, TypeScriptHelpers, JSONPlugin } from 'fuse-box';
 const g = require('gulp-load-plugins')();
 const through = require('through2');
@@ -14,6 +14,7 @@ function fuseBoxBundle(files, plugins: any[], bundleStr = '**/*.*'): Promise<any
         });
         fuseBox.bundle(bundleStr)
             .then(data => {
+                if (!data || !data.content) return reject(new Error('bundle content empty'));
                 let scope = { navigator: 1 };
                 let str = data.content.toString();
                 str = str.replace(/\(this\)\)$/, "(__root__))");
@@ -37,7 +38,7 @@ function fuseBoxBundle(files, plugins: any[], bundleStr = '**/*.*'): Promise<any
 }
 
 test('smoke', t => {
-    t.truthy(GulpAdapterPlugin);
+    t.truthy(GulpPlugin);
 });
 
 test('fusebox bundle', async t => {
@@ -50,7 +51,7 @@ test('fusebox bundle', async t => {
 
 test('gulp replace single plugin', async t => {
     const plugins = [
-        new GulpAdapterPlugin([
+        new GulpPlugin([
             () => g.replace('foo', 'bar')
         ])
     ];
@@ -63,7 +64,7 @@ test('gulp replace single plugin', async t => {
 
 test('gulp debug, size', async t => {
     const plugins = [
-        new GulpAdapterPlugin([
+        new GulpPlugin([
             () => g.debug(),
             () => g.size(),
         ])
@@ -75,7 +76,7 @@ test('gulp debug, size', async t => {
 
 test('gulp replace, inject-string', async t => {
     const plugins = [
-        new GulpAdapterPlugin([
+        new GulpPlugin([
             () => g.replace('foo', 'bar'),
             () => g.injectString.append(`exports.b = 'buz';`),
         ])
@@ -93,7 +94,7 @@ test('gulp markdown', async t => {
         TypeScriptHelpers(),
         [
             /\.html$/,
-            new GulpAdapterPlugin([
+            new GulpPlugin([
                 () => g.markdown()
             ]),
             HTMLPlugin({ useDefault: true }),
@@ -110,7 +111,8 @@ test('gulp markdown', async t => {
 test('gulp json5', async t => {
     const plugins = [
         [
-            new GulpAdapterPlugin([
+            /\.json$/,
+            new GulpPlugin([
                 () => g.json5(),
             ]),
             JSONPlugin(),
@@ -118,7 +120,10 @@ test('gulp json5', async t => {
     ];
     var {FuseBox} = await fuseBoxBundle({
         './foo.json': `{foo:1}`,
+        './app.js': `module.exports.data = require('./foo.json')`,
     }, plugins);
     let foo = FuseBox.import('./foo.json');
     t.deepEqual(foo, { foo: 1 });
+    let app = FuseBox.import('./app.js');
+    t.deepEqual(app.data, { foo: 1 });
 });

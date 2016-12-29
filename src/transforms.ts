@@ -1,6 +1,5 @@
 import { Transform } from 'stream';
 import Vinyl = require('vinyl');
-import through = require('through2');
 
 export function streamToVinyl(filepath: string) {
     return new Transform({
