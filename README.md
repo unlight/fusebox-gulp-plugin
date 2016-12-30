@@ -58,7 +58,7 @@ const plugins = [
 ];
 ```
 ```js
-import doc from './doc.md'
+import doc from './doc.md.html'
 ```
 
 #### JSON5
