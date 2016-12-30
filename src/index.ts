@@ -23,7 +23,15 @@ export class GulpPlugin implements Plugin {
         if (file.collection.name !== 'default') {
             return;
         }
-        // TODO: Check and use cache this.context.useCache
+        if (this.context.useCache && !this.isTypescriptHandled(file)) {
+            let cached = this.context.cache.getStaticCache(file);
+            if (cached) {
+                file.analysis.skip();
+                file.analysis.dependencies = cached.dependencies;
+                file.contents = cached.contents;
+                return;
+            }
+        }
         file.loadContents();
         const streams = this.vinylStreams.map(vinylStream => {
             return vinylStream(file);
@@ -36,6 +44,15 @@ export class GulpPlugin implements Plugin {
         input.end();
         return toString(pipeline, (err, result) => {
             file.contents = result;
+            // TODO: Do we need writeStaticCache?
+            // Seems no, because writeStaticCache is called before tryPlugins
+            if (this.context.useCache && !this.isTypescriptHandled(file)) {
+                this.context.cache.writeStaticCache(file, null);
+            }
         });
+    }
+
+    private isTypescriptHandled(file: File) {
+        return /\.ts(x)?$/.test(file.absPath);
     }
 }
