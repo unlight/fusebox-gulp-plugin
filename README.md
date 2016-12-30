@@ -21,11 +21,21 @@ const fuseBox = fsbx.FuseBox.init({
 });
 ```
 
-### API
-`GulpPlugin(plugins: ((file: File) => any)[])`
-
 **Note:**
-GulpPlugin is applicable to all files, so you must control type of transform by ChainPlugin.
+GulpPlugin is applicable to all files, so you must control type of transform by `ChainPlugin`
+(see examples below).
+
+Also, you can use only those plugins which only manipulates `contents` property of vinyl file.  
+Applying of some plugins, like `gulp-rename`, does not make sense,
+because they do not affect `contents`, but others - path, dirname, etc.
+
+
+### API
+```js
+class GulpPlugin {
+    constructor(vinylStreams: ((file: File) => any)[]);
+}
+```
 
 ### Examples
 
