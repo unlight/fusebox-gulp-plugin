@@ -5,7 +5,11 @@ import { streamToVinyl, vinylToStream } from './transforms';
 const toString = require('stream-to-string');
 const pumpify = require('pumpify');
 
-export class GulpPlugin implements Plugin {
+export function GulpPlugin(vinylStreams: ((file: File) => any)[]) {
+    return new FuseBoxGulpPlugin(vinylStreams);
+}
+
+export class FuseBoxGulpPlugin implements Plugin {
 
     context: WorkFlowContext;
     test: any = { test: () => true };
@@ -23,7 +27,8 @@ export class GulpPlugin implements Plugin {
         if (file.collection.name !== 'default') {
             return;
         }
-        if (this.context.useCache && !this.isTypescriptHandled(file)) {
+        const useCache = this.context.useCache && !this.isTypescriptHandled(file);
+        if (useCache) {
             let cached = this.context.cache.getStaticCache(file);
             if (cached) {
                 file.analysis.skip();
@@ -33,20 +38,20 @@ export class GulpPlugin implements Plugin {
             }
         }
         file.loadContents();
-        const streams = this.vinylStreams.map(vinylStream => {
-            return vinylStream(file);
-        });
         const input = streamToVinyl(file.absPath);
-        streams.unshift(input);
+        const streams = [input];
+        this.vinylStreams.forEach(vinylStreamFactory => {
+            streams.push(vinylStreamFactory(file));
+        });
         streams.push(vinylToStream());
-        const pipeline = pumpify.obj(...streams);
+        const pipeline = pumpify.obj(streams);
         input.write(file.contents);
         input.end();
         return toString(pipeline, (err, result) => {
             file.contents = result;
             // TODO: Do we need writeStaticCache?
             // Seems no, because writeStaticCache is called before tryPlugins
-            if (this.context.useCache && !this.isTypescriptHandled(file)) {
+            if (useCache) {
                 this.context.cache.writeStaticCache(file, null);
             }
         });

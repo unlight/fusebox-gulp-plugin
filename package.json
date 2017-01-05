@@ -9,12 +9,14 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "ava lib/*.test.js --verbose --serial --no-cache",
-    "test:w": "npm run clean && ava lib/*.test.js --verbose --serial --watch --source=lib/*.*"
+    "test:w": "ava lib/*.test.js --verbose --serial --watch",
+    "dev": "concurrently \"npm run watch\" \"npm run test:w\""
   },
   "devDependencies": {
-    "@types/node": "6.0.54",
+    "@types/node": "6.0.57",
     "@types/vinyl": "2.0.0",
     "ava": "0.17.0",
+    "concurrently": "3.1.0",
     "gulp-debug": "3.0.0",
     "gulp-eslint": "3.0.1",
     "gulp-inject-string": "1.1.0",

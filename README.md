@@ -13,7 +13,7 @@ const fuseBox = fsbx.FuseBox.init({
     outFile: './build/app.js',
     plugins: [
         // Other fusebox plugins...
-        new GulpPlugin([
+        GulpPlugin([
         	(file) => g.replace('foo', 'bar'),
         	// Other gulp plugins...
         ])
@@ -50,7 +50,7 @@ const plugins = [
     TypeScriptHelpers(),
     [
         /\.html$/,
-        gulpPlugin([
+        GulpPlugin([
             () => g.markdown()
         ]),
         HTMLPlugin({ useDefault: true })
@@ -66,7 +66,7 @@ import doc from './doc.md.html'
 const plugins = [
     [
         /\.json$/,
-        new GulpPlugin([
+        GulpPlugin([
             () => g.json5(),
         ]),
         JSONPlugin()
@@ -80,7 +80,7 @@ const data = require('./data.json');
 #### Replace and size
 ```js
 const plugins = [
-    new GulpPlugin([
+    GulpPlugin([
         () => g.replace('foo', 'bar'),
         () => g.size(),
         // Other gulp plugins...

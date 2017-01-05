@@ -51,7 +51,7 @@ test('fusebox bundle', async t => {
 
 test('gulp replace single plugin', async t => {
     const plugins = [
-        new GulpPlugin([
+        GulpPlugin([
             () => g.replace('foo', 'bar')
         ])
     ];
@@ -64,7 +64,7 @@ test('gulp replace single plugin', async t => {
 
 test('gulp debug, size', async t => {
     const plugins = [
-        new GulpPlugin([
+        GulpPlugin([
             () => g.debug(),
             () => g.size(),
         ])
@@ -76,7 +76,7 @@ test('gulp debug, size', async t => {
 
 test('gulp replace, inject-string', async t => {
     const plugins = [
-        new GulpPlugin([
+        GulpPlugin([
             () => g.replace('foo', 'bar'),
             () => g.injectString.append(`exports.b = 'buz';`),
         ])
@@ -94,7 +94,7 @@ test('gulp markdown', async t => {
         TypeScriptHelpers(),
         [
             /\.html$/,
-            new GulpPlugin([
+            GulpPlugin([
                 () => g.markdown()
             ]),
             HTMLPlugin({ useDefault: true }),
@@ -112,7 +112,7 @@ test('gulp json5', async t => {
     const plugins = [
         [
             /\.json$/,
-            new GulpPlugin([
+            GulpPlugin([
                 () => g.json5(),
             ]),
             JSONPlugin(),
