@@ -27,7 +27,8 @@ export class FuseBoxGulpPlugin implements Plugin {
         if (file.collection.name !== 'default') {
             return;
         }
-        const useCache = this.context.useCache && !this.isTypescriptHandled(file);
+        // const useCache = this.context.useCache && !this.isTypescriptHandled(file);
+        const useCache = false;
         if (useCache) {
             let cached = this.context.cache.getStaticCache(file);
             if (cached) {
