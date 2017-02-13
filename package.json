@@ -5,7 +5,6 @@
   "main": "lib",
   "scripts": {
     "clean": "rm -rf .fusebox lib",
-    "postinstall": "npm i fuse-box uglify-js",
     "compile": "tsc",
     "compile:w": "tsc -w",
     "test": "npm run compile && npm run test:r",
@@ -22,7 +21,7 @@
     "gulp-debug": "3.1.0",
     "gulp-eslint": "3.0.1",
     "gulp-inject-string": "1.1.0",
-    "gulp-json5": "0.0.2",
+    "gulp-json5": "nechtan/gulp-json5#d90b873aa",
     "gulp-load-plugins": "1.5.0",
     "gulp-markdown": "1.2.0",
     "gulp-replace": "0.5.4",
