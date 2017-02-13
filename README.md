@@ -32,9 +32,7 @@ because they do not affect `contents`, but others - path, dirname, etc.
 
 ### API
 ```js
-class GulpPlugin {
-    constructor(vinylStreams: ((file: File) => any)[]);
-}
+function GulpPlugin(StreamFactories: ((file: File) => stream.Transform)[])
 ```
 
 ### Examples
@@ -47,43 +45,34 @@ const g = require('gulp-load-plugins')();
 #### Markdown
 ```js
 const plugins = [
-    TypeScriptHelpers(),
     [
-        /\.html$/,
+        /\.md$/,
         GulpPlugin([
-            () => g.markdown()
+            () => g.markdown(),
         ]),
-        HTMLPlugin({ useDefault: true })
+        RawPlugin({ extensions: ['.md'] }),
     ]
 ];
 ```
 ```js
-import doc from './doc.md.html'
+var doc = require('./doc.md')
 ```
 
 #### JSON5
 ```js
 const plugins = [
+    {
+        init: (k) => k.allowExtension('.json5')
+    },
     [
-        /\.json$/,
+        /\.json5$/,
         GulpPlugin([
             () => g.json5(),
         ]),
-        JSONPlugin()
+        JSONPlugin({}),
     ]
 ];
 ```
 ```js
-const data = require('./data.json');
-```
-
-#### Replace and size
-```js
-const plugins = [
-    GulpPlugin([
-        () => g.replace('foo', 'bar'),
-        () => g.size(),
-        // Other gulp plugins...
-    ])
-];
+const data = require('./data.json5');
 ```
