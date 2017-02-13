@@ -1,17 +1,19 @@
 import { test } from 'ava';
 import { GulpPlugin } from './index';
 import { FuseBox, RawPlugin, JSONPlugin } from 'fuse-box';
+import { File } from 'fuse-box/dist/typings/File';
 const g = require('gulp-load-plugins')();
 import through = require('through2');
 
-function fuseBoxBundle(files, plugins: any[], bundleStr = '**/*.*'): Promise<any> {
+function fuseBoxBundle(files, plugins: any[], options = {}, bundleStr = '**/*.*'): Promise<any> {
+    const defaultOptions = {
+        log: false,
+        cache: false,
+        plugins: plugins,
+        files: files,
+    };
     return new Promise((resolve, reject) => {
-        let fuseBox = new FuseBox({
-            log: false,
-            cache: false,
-            plugins: plugins,
-            files: files
-        });
+        const fuseBox = new FuseBox({ ...defaultOptions, ...options });
         fuseBox.bundle(bundleStr)
             .then(data => {
                 if (!data || !data.content) return reject(new Error('bundle content empty'));
@@ -142,4 +144,17 @@ test('eslint', async t => {
         './app.js': `var x; y = 2;`,
     }, plugins);
     let app = FuseBox.import('./app');
+});
+
+test.skip('cache', async t => {
+    const plugins = [
+        GulpPlugin([
+            () => g.replace('foo', 'bar')
+        ]),
+    ];
+    let {FuseBox} = await fuseBoxBundle({
+        './foo.js': `module.exports = 'foo'`,
+    }, plugins, { cache: true });
+    let foo = FuseBox.import('./foo');
+    t.is(foo, 'bar');
 });
