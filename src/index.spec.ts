@@ -1,3 +1,4 @@
+import 'babel-register';
 import { test } from 'ava';
 import { GulpPlugin } from './index';
 import { FuseBox, HTMLPlugin, TypeScriptHelpers, JSONPlugin } from 'fuse-box';
@@ -60,18 +61,6 @@ test('gulp replace single plugin', async t => {
     }, plugins);
     let foo = FuseBox.import('./foo');
     t.is(foo, 'bar');
-});
-
-test('gulp debug, size', async t => {
-    const plugins = [
-        GulpPlugin([
-            () => g.debug(),
-            () => g.size(),
-        ])
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './foo.js': `module.exports = 'foo'`,
-    }, plugins);
 });
 
 test('gulp replace, inject-string', async t => {

@@ -2,3 +2,4 @@
 ~*
 /.fusebox/
 /lib/
+/npm-debug.log*

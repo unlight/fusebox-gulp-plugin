@@ -4,19 +4,20 @@
   "description": "Adapt gulp plugins to work with fuse-box",
   "main": "lib",
   "scripts": {
-    "clean": "rm -rf .fusebox",
+    "clean": "rm -rf .fusebox lib",
     "postinstall": "npm i fuse-box uglify-js",
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "ava lib/*.test.js --verbose --serial --no-cache",
-    "test:w": "ava lib/*.test.js --verbose --serial --watch",
-    "dev": "concurrently \"npm run watch\" \"npm run test:w\""
+    "compile": "tsc",
+    "compile:w": "tsc -w",
+    "test": "npm run compile && npm run test:r",
+    "test:r": "ava lib/*.spec.js --verbose --serial --no-cache",
+    "test:w": "ava lib/*.spec.js --verbose --serial --watch",
+    "dev": "concurrently \"compile:w\" \"npm run test:w\""
   },
   "devDependencies": {
     "@types/node": "~7.0.5",
     "@types/vinyl": "2.0.0",
-    "ava": "0.18.1",
-    "concurrently": "3.2.0",
+    "ava": "~0.18.1",
+    "concurrently": "~3.3.0",
     "gulp-debug": "~3.0.0",
     "gulp-eslint": "~3.0.1",
     "gulp-inject-string": "1.1.0",
