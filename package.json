@@ -11,7 +11,7 @@
     "test": "npm run compile && npm run test:r",
     "test:r": "ava lib/*.spec.js --verbose --serial --no-cache",
     "test:w": "ava lib/*.spec.js --verbose --serial --watch",
-    "dev": "concurrently \"compile:w\" \"npm run test:w\""
+    "dev": "concurrently -r -k -p \"{name}:\" -n \"c,t\" \"npm run compile:w\" \"npm run test:w\""
   },
   "devDependencies": {
     "@types/node": "~7.0.5",
