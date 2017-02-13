@@ -20,7 +20,7 @@
     "ava": "0.18.1",
     "concurrently": "3.3.0",
     "gulp-debug": "3.1.0",
-    "gulp-eslint": "~3.0.1",
+    "gulp-eslint": "3.0.1",
     "gulp-inject-string": "1.1.0",
     "gulp-json5": "0.0.2",
     "gulp-load-plugins": "1.5.0",

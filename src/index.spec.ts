@@ -116,3 +116,30 @@ test('json5', async t => {
     let app = FuseBox.import('./app');
     t.deepEqual(app.data, { foo: 1 });
 });
+
+test('eslint', async t => {
+    const plugins = [
+        [
+            /\.js$/,
+            GulpPlugin([
+                () => g.eslint({
+                    warnFileIgnored: true,
+                    ignore: false,
+                    dotfiles: true,
+                    rules: {
+                        "no-unused-vars": 1,
+                        "no-undef": 2,
+                    }
+                }),
+                () => g.eslint.result(result => {
+                    t.is(result.errorCount, 1);
+                    t.is(result.warningCount, 1);
+                }),
+            ])
+        ]
+    ];
+    let {FuseBox} = await fuseBoxBundle({
+        './app.js': `var x; y = 2;`,
+    }, plugins);
+    let app = FuseBox.import('./app');
+});

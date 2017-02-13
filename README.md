@@ -76,3 +76,8 @@ const plugins = [
 ```js
 const data = require('./data.json5');
 ```
+
+### DEBUG
+```
+inspect node_modules/ava/profile.js lib/index.spec.js
+```
