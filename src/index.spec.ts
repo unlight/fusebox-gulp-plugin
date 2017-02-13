@@ -1,9 +1,8 @@
-import 'babel-register';
 import { test } from 'ava';
 import { GulpPlugin } from './index';
-import { FuseBox, HTMLPlugin, TypeScriptHelpers, JSONPlugin } from 'fuse-box';
+import { FuseBox, RawPlugin, JSONPlugin } from 'fuse-box';
 const g = require('gulp-load-plugins')();
-const through = require('through2');
+import through = require('through2');
 
 function fuseBoxBundle(files, plugins: any[], bundleStr = '**/*.*'): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -17,17 +16,16 @@ function fuseBoxBundle(files, plugins: any[], bundleStr = '**/*.*'): Promise<any
             .then(data => {
                 if (!data || !data.content) return reject(new Error('bundle content empty'));
                 let scope = { navigator: 1 };
-                let str = data.content.toString();
+                let str: string = data.content.toString();
                 str = str.replace(/\(this\)\)$/, "(__root__))");
                 try {
                     let fn = new Function("window", "__root__", str);
                     fn(scope, scope);
                 } catch (err) {
-                    var pos = str.indexOf('(function(e){var r="undefined"!=typeof window&&window.navigator');
-                    if (pos !== -1) {
-                        var content = str.slice(0, pos);
-                        console.error(content);
-                    }
+                    var pos = str.lastIndexOf('function(___scope___){');
+                    var end = str.indexOf('(function(e){var r="undefined"!=typeof window&&window.navigator');
+                    var content = str.slice(pos, end - 6);
+                    console.error(content);
                     return reject(err);
                 }
                 return resolve(scope);
@@ -44,13 +42,13 @@ test('smoke', t => {
 
 test('fusebox bundle', async t => {
     let {FuseBox} = await fuseBoxBundle({
-        './a.js': `module.exports = 1`,
+        './app.js': `module.exports = 1`,
     }, []);
-    let result = FuseBox.import('./a.js');
+    let result = FuseBox.import('./app');
     t.is(result, 1);
 });
 
-test('gulp replace single plugin', async t => {
+test('replace', async t => {
     const plugins = [
         GulpPlugin([
             () => g.replace('foo', 'bar')
@@ -63,7 +61,7 @@ test('gulp replace single plugin', async t => {
     t.is(foo, 'bar');
 });
 
-test('gulp replace, inject-string', async t => {
+test('replace and inject-string', async t => {
     const plugins = [
         GulpPlugin([
             () => g.replace('foo', 'bar'),
@@ -78,41 +76,43 @@ test('gulp replace, inject-string', async t => {
     t.is(b, 'buz');
 });
 
-test('gulp markdown', async t => {
+test('markdown', async t => {
     const plugins = [
-        TypeScriptHelpers(),
         [
-            /\.html$/,
+            /\.md$/,
             GulpPlugin([
                 () => g.markdown()
             ]),
-            HTMLPlugin({ useDefault: true }),
+            RawPlugin({ extensions: ['.md'] }),
         ]
     ];
     let {FuseBox} = await fuseBoxBundle({
-        './app.ts': `import doc from './doc.html'; exports.doc = doc`,
-        './doc.html': `# header`,
+        './app.js': `exports.doc = require('./doc.md')`,
+        './doc.md': `# header`,
     }, plugins);
-    let {doc} = FuseBox.import('./app.ts');
+    let {doc} = FuseBox.import('./app');
     t.is(doc, `<h1 id="header">header</h1>\n`);
 });
 
-test('gulp json5', async t => {
+test('json5', async t => {
     const plugins = [
+        {
+            init: (k) => k.allowExtension('.json5')
+        },
         [
-            /\.json$/,
+            /\.json5$/,
             GulpPlugin([
                 () => g.json5(),
             ]),
-            JSONPlugin(),
+            JSONPlugin({}),
         ]
     ];
     var {FuseBox} = await fuseBoxBundle({
-        './foo.json': `{foo:1}`,
-        './app.js': `module.exports.data = require('./foo.json')`,
+        './foo.json5': `{foo:1}`,
+        './app.js': `exports.data = require('./foo.json5')`,
     }, plugins);
-    let foo = FuseBox.import('./foo.json');
+    let foo = FuseBox.import('./foo.json5');
     t.deepEqual(foo, { foo: 1 });
-    let app = FuseBox.import('./app.js');
+    let app = FuseBox.import('./app');
     t.deepEqual(app.data, { foo: 1 });
 });
