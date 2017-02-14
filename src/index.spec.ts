@@ -110,7 +110,7 @@ describe('index', () => {
                 GulpPlugin([
                     () => g.json5(),
                 ]),
-                JSONPlugin({}),
+                JSONPlugin(),
             ]
         ];
         var {FuseBox} = await fuseBoxBundle({
