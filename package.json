@@ -1,6 +1,6 @@
 {
   "name": "fusebox-gulp-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Adapt gulp plugins to work with fuse-box",
   "main": "lib",
   "scripts": {
