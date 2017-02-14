@@ -1,9 +1,11 @@
-import { test } from 'ava';
+/// <reference path="../node_modules/@types/mocha/index.d.ts" />
+/// <reference path="../node_modules/@types/node/index.d.ts" />
 import { GulpPlugin } from './index';
 import { FuseBox, RawPlugin, JSONPlugin } from 'fuse-box';
 import { File } from 'fuse-box/dist/typings/File';
 const g = require('gulp-load-plugins')();
 import through = require('through2');
+import assert = require('power-assert');
 
 function fuseBoxBundle(files, plugins: any[], options = {}, bundleStr = '**/*.*'): Promise<any> {
     const defaultOptions = {
@@ -38,123 +40,129 @@ function fuseBoxBundle(files, plugins: any[], options = {}, bundleStr = '**/*.*'
     });
 }
 
-test('smoke', t => {
-    t.truthy(GulpPlugin);
-});
+describe('index', () => {
 
-test('fusebox bundle', async t => {
-    let {FuseBox} = await fuseBoxBundle({
-        './app.js': `module.exports = 1`,
-    }, []);
-    let result = FuseBox.import('./app');
-    t.is(result, 1);
-});
+    it('smoke', () => {
+        assert(GulpPlugin);
+    });
 
-test('replace', async t => {
-    const plugins = [
-        GulpPlugin([
-            () => g.replace('foo', 'bar')
-        ])
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './foo.js': `module.exports = 'foo'`,
-    }, plugins);
-    let foo = FuseBox.import('./foo');
-    t.is(foo, 'bar');
-});
+    it('fusebox bundle', async () => {
+        let {FuseBox} = await fuseBoxBundle({
+            './app.js': `module.exports = 1`,
+        }, []);
+        let result = FuseBox.import('./app');
+        assert(result === 1);
+    });
 
-test('replace and inject-string', async t => {
-    const plugins = [
-        GulpPlugin([
-            () => g.replace('foo', 'bar'),
-            () => g.injectString.append(`exports.b = 'buz';`),
-        ])
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './foo.js': `exports.f = 'foo';`,
-    }, plugins);
-    let {f, b} = FuseBox.import('./foo');
-    t.is(f, 'bar');
-    t.is(b, 'buz');
-});
-
-test('markdown', async t => {
-    const plugins = [
-        [
-            /\.md$/,
+    it('replace', async () => {
+        const plugins = [
             GulpPlugin([
-                () => g.markdown()
-            ]),
-            RawPlugin({ extensions: ['.md'] }),
-        ]
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './app.js': `exports.doc = require('./doc.md')`,
-        './doc.md': `# header`,
-    }, plugins);
-    let {doc} = FuseBox.import('./app');
-    t.is(doc, `<h1 id="header">header</h1>\n`);
-});
-
-test('json5', async t => {
-    const plugins = [
-        {
-            init: (k) => k.allowExtension('.json5')
-        },
-        [
-            /\.json5$/,
-            GulpPlugin([
-                () => g.json5(),
-            ]),
-            JSONPlugin({}),
-        ]
-    ];
-    var {FuseBox} = await fuseBoxBundle({
-        './foo.json5': `{foo:1}`,
-        './app.js': `exports.data = require('./foo.json5')`,
-    }, plugins);
-    let foo = FuseBox.import('./foo.json5');
-    t.deepEqual(foo, { foo: 1 });
-    let app = FuseBox.import('./app');
-    t.deepEqual(app.data, { foo: 1 });
-});
-
-test('eslint', async t => {
-    const plugins = [
-        [
-            /\.js$/,
-            GulpPlugin([
-                () => g.eslint({
-                    warnFileIgnored: true,
-                    ignore: false,
-                    dotfiles: true,
-                    rules: {
-                        "no-unused-vars": 1,
-                        "no-undef": 2,
-                    }
-                }),
-                () => g.eslint.result(result => {
-                    t.is(result.errorCount, 1);
-                    t.is(result.warningCount, 1);
-                }),
+                () => g.replace('foo', 'bar')
             ])
-        ]
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './app.js': `var x; y = 2;`,
-    }, plugins);
-    let app = FuseBox.import('./app');
-});
+        ];
+        let {FuseBox} = await fuseBoxBundle({
+            './foo.js': `module.exports = 'foo'`,
+        }, plugins);
+        let foo = FuseBox.import('./foo');
+        assert(foo === 'bar');
+    });
 
-test.skip('cache', async t => {
-    const plugins = [
-        GulpPlugin([
-            () => g.replace('foo', 'bar')
-        ]),
-    ];
-    let {FuseBox} = await fuseBoxBundle({
-        './foo.js': `module.exports = 'foo'`,
-    }, plugins, { cache: true });
-    let foo = FuseBox.import('./foo');
-    t.is(foo, 'bar');
+    it('replace and inject-string', async () => {
+        const plugins = [
+            GulpPlugin([
+                () => g.replace('foo', 'bar'),
+                () => g.injectString.append(`exports.b = 'buz';`),
+            ])
+        ];
+        let {FuseBox} = await fuseBoxBundle({
+            './foo.js': `exports.f = 'foo';`,
+        }, plugins);
+        let {f, b} = FuseBox.import('./foo');
+        assert(f === 'bar');
+        assert(b === 'buz');
+    });
+
+    it('markdown', async () => {
+        const plugins = [
+            [
+                /\.md$/,
+                GulpPlugin([
+                    () => g.markdown()
+                ]),
+                RawPlugin({ extensions: ['.md'] }),
+            ]
+        ];
+        let {FuseBox} = await fuseBoxBundle({
+            './app.js': `exports.doc = require('./doc.md')`,
+            './doc.md': `# header`,
+        }, plugins);
+        let {doc} = FuseBox.import('./app');
+        assert(doc === `<h1 id="header">header</h1>\n`);
+    });
+
+    it('json5', async () => {
+        const plugins = [
+            {
+                init: (k) => k.allowExtension('.json5')
+            },
+            [
+                /\.json5$/,
+                GulpPlugin([
+                    () => g.json5(),
+                ]),
+                JSONPlugin({}),
+            ]
+        ];
+        var {FuseBox} = await fuseBoxBundle({
+            './foo.json5': `{foo:1}`,
+            './app.js': `exports.data = require('./foo.json5')`,
+        }, plugins);
+        let foo = FuseBox.import('./foo.json5');
+        assert.deepEqual(foo, { foo: 1 });
+        let app = FuseBox.import('./app');
+        assert.deepEqual(app.data, { foo: 1 });
+    });
+
+    it('eslint', done => {
+        const plugins = [
+            [
+                /\.js$/,
+                GulpPlugin([
+                    () => g.eslint({
+                        warnFileIgnored: true,
+                        ignore: false,
+                        dotfiles: true,
+                        rules: {
+                            "no-unused-vars": 1,
+                            "no-undef": 2,
+                        }
+                    }),
+                    () => g.eslint.result(result => {
+                        assert(result.errorCount === 1);
+                        assert(result.warningCount === 1);
+                        done();
+                    }),
+                ])
+            ]
+        ];
+        (async () => {
+            let {FuseBox} = await fuseBoxBundle({
+                './app.js': `var x; y = 2;`,
+            }, plugins);
+            let app = FuseBox.import('./app');
+        })();
+    });
+
+    it.skip('cache', async () => {
+        const plugins = [
+            GulpPlugin([
+                () => g.replace('foo', 'bar')
+            ]),
+        ];
+        let {FuseBox} = await fuseBoxBundle({
+            './foo.js': `module.exports = 'foo'`,
+        }, plugins, { cache: true });
+        let foo = FuseBox.import('./foo');
+        assert(foo === 'bar');
+    });
 });

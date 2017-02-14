@@ -8,16 +8,19 @@
     "compile": "tsc",
     "compile:w": "tsc -w",
     "test": "npm run compile && npm run test:r",
-    "test:r": "ava lib/*.spec.js --verbose --serial --no-cache",
-    "test:w": "ava lib/*.spec.js --verbose --serial --watch",
-    "dev": "concurrently -r -k -p \"{name}:\" -n \"c,t\" \"npm run compile:w\" \"npm run test:w\""
+    "test:r": "npm run mocha -- src/*.spec.ts",
+    "test:w": "npm run mocha -- --watch src/*.spec.ts ",
+    "dev": "concurrently -r -k -p \"{name}:\" -n \"c,t\" \"npm run compile:w\" \"npm run test:w\"",
+    "mocha": "mocha --compilers ts:ts-node/register --require espower-ts-node"
   },
   "devDependencies": {
+    "@types/mocha": "2.2.39",
     "@types/node": "7.0.5",
+    "@types/power-assert": "1.4.29",
     "@types/through2": "2.0.32",
     "@types/vinyl": "2.0.0",
-    "ava": "0.18.1",
     "concurrently": "3.3.0",
+    "espower-ts-node": "1.0.3",
     "gulp-debug": "3.1.0",
     "gulp-eslint": "3.0.1",
     "gulp-inject-string": "1.1.0",
@@ -26,6 +29,8 @@
     "gulp-markdown": "1.2.0",
     "gulp-replace": "0.5.4",
     "gulp-size": "~2.1.0",
+    "mocha": "3.2.0",
+    "power-assert": "1.4.2",
     "through2": "~2.0.3",
     "typescript": "2.1.6"
   },
