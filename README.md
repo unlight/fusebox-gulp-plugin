@@ -32,7 +32,7 @@ because they do not affect `contents`, but others - path, dirname, etc.
 
 ### API
 ```js
-function GulpPlugin(StreamFactories: ((file: File) => stream.Transform)[])
+function GulpPlugin(streamFactories: ((file: File) => stream.Transform)[])
 ```
 
 ### Examples
