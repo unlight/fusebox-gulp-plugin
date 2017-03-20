@@ -1,5 +1,7 @@
 fusebox-gulp-plugin
 ===================
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/unlight/fusebox-gulp-plugin.svg)](https://greenkeeper.io/)
 Adapt gulp plugins to work with fuse-box.
 
 ## Usage
